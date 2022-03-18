@@ -1,97 +1,98 @@
-let Kanap_data = [];
-let Cart = localStorage
+let kanapData = [];
+let cart = localStorage
 
 async function FetchData() {
     await fetch("http://localhost:3000/api/products")
         .then(res => res.json())
         .then(res2 => {
-            Kanap_data = res2
-            console.table(Kanap_data)
+            kanapData = res2
+            console.table(kanapData)
         })
 }
 
-/* get the id of the current html page */
+/* get the idof the current html page */
 
-function GetId() {
-    Id = document.URL.split("?id=");
-    for (let i = 0; i < Kanap_data.length; i++)
-        if (Id[1] == Kanap_data[i]._id)
+function getId() {
+    id = document.URL.split("?id=")
+    for (let i = 0; i < kanapData.length; i++)
+        if (id[1] == kanapData[i]._id)
             return (i)
     return(-1);
 }
 
-function DisplayImg(Id) {
+function displayImg(id) {
     document.getElementsByClassName("item__img")[0].innerHTML = 
-    `<img src="${Kanap_data[Id].imageUrl}" alt="${Kanap_data[Id].altTxt}">`
+    `<img src="${kanapData[id].imageUrl}" alt="${kanapData[id].altTxt}">`
 }
 
-function DisplayPrice(Id) {
-    document.getElementById("price").innerHTML = `${Kanap_data[Id].price}`
+function displayPrice(id) {
+    document.getElementById("price").innerHTML = `${kanapData[id].price}`
 }
 
-function DisplayTitle(Id) {
-    document.getElementById("title").innerHTML = `${Kanap_data[Id].name}`
+function displayTitle(id) {
+    document.getElementById("title").innerHTML = `${kanapData[id].name}`
 }
 
-function DisplayDescription(Id) {
-    document.getElementById("description").innerHTML = `${Kanap_data[Id].description}`
+function displayDescription(id) {
+    document.getElementById("description").innerHTML = `${kanapData[id].description}`
 }
 
-function DisplayColors(Id) {
+function displayColors(id) {
     let ColorsString = [];
-    for (let i = 0; i < Kanap_data[Id].colors.length; i++)
-        ColorsString += `<option value="${Kanap_data[Id].colors[i]}">${Kanap_data[Id].colors[i]}</option>`
+    for (let i = 0; i < kanapData[id].colors.length; i++)
+        ColorsString += `<option value="${kanapData[id].colors[i]}">${kanapData[id].colors[i]}</option>`
     FullDiv = `<option value="">--SVP, choisissez une couleur --</option>` + ColorsString
     document.getElementById("colors").innerHTML = FullDiv
 }
 
-function HandleProduct(Id) {
-    DisplayImg(Id)
-    DisplayTitle(Id)
-    DisplayPrice(Id)
-    DisplayDescription(Id)
-    DisplayColors(Id)
+function handleProduct(id) {
+    displayImg(id)
+    displayTitle(id)
+    displayPrice(id)
+    displayDescription(id)
+    displayColors(id)
 }
 
-async function Launch() {
+async function launch() {
     await FetchData();
-    Index = GetId();
-    HandleProduct(Index);
+    index = getId();
+    handleProduct(index);
 }
 
-function CheckObj(Elem) {
-    if (Cart.length == 0)
+function checkObj(elem) {
+    if (cart.length == 0)
         return(0)
-    console.log(Cart)
-    for (let i = 0; i < Cart.length; i++) {
-        Line = Cart.getItem(i)
-        Line = JSON.parse(Line)
-        if (Elem.id == Line.id && Elem.color == Line.color) {
-            Line.quantity = (parseInt(Elem.quantity, 10) + parseInt(Line.quantity, 10)).toString()
-            Cart.setItem(i, JSON.stringify(Line))
-            return (1)
+    for (let i = 0; i < cart.length; i++) {
+        let line = cart.getItem(i)
+        line = JSON.parse(line)
+        if (line) {
+            if (elem.id== line.id&& elem.color == line.color) {
+                line.quantity = (parseInt(elem.quantity, 10) + parseInt(line.quantity, 10)).toString()
+                cart.setItem(i, JSON.stringify(line))
+                return (1)
+            }
         }
     }
     return (0)
 }
 
-function AddToCart() {
-    let Color = document.getElementById("colors").value
-        if (!Color)
+function addToCart() {
+    let color = document.getElementById("colors").value
+        if (!color)
             return (-1)
-    let Quantity = document.getElementById("quantity").value
-        if (Quantity <= 0 || Quantity > 100)
+    let quantity = document.getElementById("quantity").value
+        if (quantity <= 0 || quantity > 100)
             return(-1)
-    let NewElem = {
-        id : Kanap_data[GetId()]._id,
-        color : Color,
-        quantity : Quantity
+    let newElem = {
+        id: kanapData[getId()]._id,
+        color : color,
+        quantity : quantity
     }
-    let obj = JSON.stringify(NewElem);
-    if (!CheckObj(NewElem))
-        Cart[Cart.length] = obj
-    console.log(Cart)
+    let obj = JSON.stringify(newElem);
+    if (!checkObj(newElem))
+        cart[cart.length] = obj
 }
 
-Launch();
-document.getElementById("addToCart").addEventListener("click", AddToCart);
+launch();
+document.getElementById("addToCart").addEventListener("click", addToCart);
+
